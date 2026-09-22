@@ -63,8 +63,8 @@ const LIQUID_ITEMS: LiquidItem[] = [
     channelNo: 2,
     name: "PLACEBO",
     nameKo: "플라시보",
-    hue: 315,
-    colorLabel: "바이오 마젠타",
+    hue: 275,
+    colorLabel: "인공 펄 보라",
     subtitle: "Fake Hope",
     volume: "500ml",
     formulaLine: "Distilled Water / 0% Nutrition",
@@ -101,8 +101,8 @@ const LIQUID_ITEMS: LiquidItem[] = [
     channelNo: 4,
     name: "NICOTINE",
     nameKo: "니코틴",
-    hue: 185,
-    colorLabel: "스모크 시안",
+    hue: 45,
+    colorLabel: "독성 옐로우",
     subtitle: "Short Break",
     volume: "100ml",
     formulaLine: "C₁₀H₁₄N₂ / Liquid Nicotine",
@@ -120,8 +120,8 @@ const LIQUID_ITEMS: LiquidItem[] = [
     channelNo: 5,
     name: "SUGAR",
     nameKo: "당",
-    hue: 275,
-    colorLabel: "인공 펄 보라",
+    hue: 315,
+    colorLabel: "바이오 마젠타",
     subtitle: "Brain Power",
     volume: "1000ml",
     formulaLine: "High-Enriched Sugar Concentrate",
@@ -177,8 +177,8 @@ const LIQUID_ITEMS: LiquidItem[] = [
     channelNo: 8,
     name: "ALCOHOL",
     nameKo: "알코올",
-    hue: 45,
-    colorLabel: "독성 옐로우",
+    hue: 185,
+    colorLabel: "스모크 시안",
     subtitle: "Numbness",
     volume: "750ml",
     formulaLine: "C₂H₅OH / Ethyl Alcohol",
@@ -238,82 +238,45 @@ function colorFromHue(hue: number, lightness = 45): string {
 // React 안전한 마운트 감지 서브스크립션 함수
 const emptySubscribe = () => () => {};
 
-// --- Vector IV Bag Component ---
-function VectorIVBag({
-  item,
-  isFront,
-}: {
-  item: LiquidItem;
-  isFront: boolean;
-}) {
-  const accentColor = colorFromHue(item.hue, 45);
-
+// --- Image-based IV Bag Component (중앙 선택 이미지 대폭 확대) ---
+function ImageIVBag({ item, isFront }: { item: LiquidItem; isFront: boolean }) {
   return (
     <div className="relative flex flex-col items-center select-none">
-      <div className="h-1.5 w-4 rounded-t-full border border-slate-300 bg-slate-200" />
-
       <div
-        className={`relative flex flex-col items-center justify-between rounded-2xl border transition-all duration-200 ${
-          isFront
-            ? "h-36 w-26 border-slate-300 bg-white shadow-lg"
-            : "h-28 w-20 border-slate-200 bg-slate-50 opacity-60"
+        className={`relative flex items-center justify-center transition-all duration-200 ${
+          isFront ? "h-[380px] w-[250px]" : "h-[220px] w-[145px] opacity-40"
         }`}
-        style={{
-          boxShadow: isFront
-            ? `0 8px 20px -4px ${colorFromHue(item.hue, 50)}35`
-            : "none",
-        }}
       >
-        <div
-          className="absolute inset-x-1 bottom-1.5 top-5 overflow-hidden rounded-xl opacity-85"
-          style={{
-            background: `linear-gradient(180deg, transparent 0%, ${colorFromHue(
-              item.hue,
-              85,
-            )} 35%, ${colorFromHue(item.hue, 60)} 100%)`,
-          }}
-        >
-          <div className="absolute top-1 inset-x-0 h-0.5 rounded-full bg-white/60" />
-        </div>
+        {/* public 폴더 내 이미지 파일 렌더링 */}
+        <img
+          src={`/${item.id}.png`}
+          alt={item.name}
+          className="w-full h-full object-contain pointer-events-none drop-shadow-2xl"
+        />
 
-        <div className="relative z-10 p-1.5 text-center w-full">
-          <div className="flex justify-between items-center text-[8px] font-mono text-slate-500 border-b border-slate-200/60 pb-0.5">
-            <span>CH-{String(item.channelNo).padStart(3, "0")}</span>
-          </div>
-
-          <h3 className="mt-1 font-extrabold tracking-tight text-xs truncate text-slate-900">
+        {/* 이미지 중앙 위에 이름(영어 / 한국어) 배치 */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center pointer-events-none">
+          <span
+            className={`font-extrabold tracking-wider text-slate-900 leading-tight drop-shadow-[0_1.5px_3px_rgba(255,255,255,0.95)] ${
+              isFront ? "text-base" : "text-[11px]"
+            }`}
+          >
             {item.name}
-          </h3>
-
-          <p className="text-[9px] text-slate-700 font-medium">{item.nameKo}</p>
+          </span>
+          <span
+            className={`mt-0.5 font-bold text-slate-800 leading-none drop-shadow-[0_1.5px_3px_rgba(255,255,255,0.95)] ${
+              isFront ? "text-xs" : "text-[9px]"
+            }`}
+          >
+            {item.nameKo}
+          </span>
         </div>
-
-        <div className="relative z-10 mb-0.5 flex justify-center space-x-1">
-          <div className="h-1.5 w-1 rounded-b border border-slate-300 bg-slate-200" />
-          <div className="h-1.5 w-1 rounded-b border border-slate-300 bg-slate-200" />
-        </div>
-      </div>
-
-      <div className="relative flex flex-col items-center">
-        <div className="h-1 w-0.5 bg-slate-300" />
-        <div
-          className={`rounded-sm border bg-white overflow-hidden ${
-            isFront ? "h-5 w-2.5 border-slate-300" : "h-4 w-2 border-slate-200"
-          }`}
-        >
-          <div
-            className="absolute bottom-0 inset-x-0 h-1.5 opacity-80"
-            style={{ backgroundColor: accentColor }}
-          />
-        </div>
-        <div className="h-4 w-0.5" style={{ backgroundColor: accentColor }} />
       </div>
     </div>
   );
 }
 
 export default function IVCatalogPage() {
-  // useSyncExternalStore로 연쇄 재렌더링 경고 없이 클라이언트 마운트 여부 안전하게 처리
   const hasMounted = useSyncExternalStore(
     emptySubscribe,
     () => true,
@@ -403,7 +366,7 @@ export default function IVCatalogPage() {
 
   if (!hasMounted) {
     return (
-      <div className="mx-auto min-h-screen h-screen max-w-md bg-white text-slate-800 font-sans flex items-center justify-center">
+      <div className="mx-auto h-[100dvh] max-w-md bg-white text-slate-800 font-sans flex items-center justify-center">
         <div className="text-xs font-mono text-slate-500">
           INITIALIZING CATALOG...
         </div>
@@ -414,41 +377,39 @@ export default function IVCatalogPage() {
   const selectedLiquid = LIQUID_ITEMS[selectedIndex];
 
   return (
-    <div className="mx-auto min-h-screen h-screen max-h-screen max-w-md w-full bg-white text-slate-900 font-sans flex flex-col justify-between overflow-hidden box-border">
-      {/* Header Bar */}
-      <header className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 bg-white/90 sticky top-0 z-20">
-        <div>
-          <span className="text-[9px] font-mono tracking-widest text-slate-400 block uppercase">
-            IV Drip Exhibition Catalog
-          </span>
-          <h1 className="text-xs font-extrabold tracking-tight text-slate-900 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-slate-800" />
-            3D ROTARY IV STAND
-          </h1>
-        </div>
-      </header>
-
-      {/* Main 3D Rotary Area */}
-      <main className="relative flex-1 flex flex-col items-center justify-center py-1 select-none overflow-hidden">
-        {/* Rotary Container */}
+    <div className="mx-auto h-[100dvh] max-w-md w-full bg-white text-slate-900 font-sans flex flex-col justify-between overflow-hidden box-border p-3">
+      {/* Main 3D Area (중앙 + 양 옆 총 3개만 표시, 중앙 크기 극대화) */}
+      <main className="relative flex-1 flex flex-col items-center justify-center select-none overflow-hidden min-h-0">
         <div
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
-          className="relative w-full h-[220px] flex items-center justify-center cursor-grab active:cursor-grabbing touch-none z-10"
+          className="relative w-full flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing touch-none z-10"
         >
           {LIQUID_ITEMS.map((item, i) => {
             const angleDeg = i * degreesPerItem + rotationAngle;
-            const angleRad = (angleDeg * Math.PI) / 180;
+            // 각도를 [-180, 180) 정규화
+            const normalizedAngle = (((angleDeg % 360) + 540) % 360) - 180;
+            const absAngle = Math.abs(normalizedAngle);
 
-            const x = Math.sin(angleRad) * 125;
+            // 중앙 기준 양옆 1개 범위(약 52도 초과)를 벗어나면 숨김
+            if (absAngle > 52) return null;
+
+            const angleRad = (normalizedAngle * Math.PI) / 180;
+            const x = Math.sin(angleRad) * 150;
             const z = Math.cos(angleRad);
 
-            const scale = 0.6 + 0.4 * ((z + 1) / 2);
-            const opacity = 0.3 + 0.7 * ((z + 1) / 2);
+            const scale = 0.65 + 0.35 * ((z + 1) / 2);
+            let opacity = 0.35 + 0.65 * ((z + 1) / 2);
+
+            // 범위 끝부분 부드러운 페이드아웃
+            if (absAngle > 36) {
+              opacity *= 1 - (absAngle - 36) / (52 - 36);
+            }
+
             const zIndex = Math.round((z + 1) * 100);
-            const isFront = z > 0.92;
+            const isFront = absAngle < 15;
 
             return (
               <div
@@ -462,15 +423,32 @@ export default function IVCatalogPage() {
                   filter: isFront ? "none" : "blur(0.5px)",
                 }}
               >
-                <VectorIVBag item={item} isFront={isFront} />
+                <ImageIVBag item={item} isFront={isFront} />
               </div>
             );
           })}
         </div>
+      </main>
+
+      {/* Detail Section & Footer Navigation */}
+      <div className="flex-none flex flex-col gap-2 z-20">
+        {/* Selected Channel Indicator */}
+        <div className="w-full flex items-center justify-center">
+          <div className="flex items-center gap-1.5 text-[11px] font-mono">
+            <span className="text-slate-400">SELECTED:</span>
+            <span
+              className="font-bold"
+              style={{ color: colorFromHue(selectedLiquid.hue, 40) }}
+            >
+              #{String(selectedLiquid.channelNo).padStart(2, "0")}{" "}
+              {selectedLiquid.name} ({selectedLiquid.nameKo})
+            </span>
+          </div>
+        </div>
 
         {/* Compact Detail Card */}
         <section
-          className="w-[calc(100%-2rem)] mx-auto rounded-xl border p-3 bg-slate-50/80 shadow-sm z-20 transition-all duration-200"
+          className="w-full rounded-xl border p-3 bg-slate-50/80 shadow-sm transition-all duration-200"
           style={{
             borderColor: colorFromHue(selectedLiquid.hue, 80),
           }}
@@ -492,6 +470,16 @@ export default function IVCatalogPage() {
             >
               {selectedLiquid.name}
             </h2>
+            <span
+              className="px-1.5 py-0.5 rounded text-[9px] font-mono border"
+              style={{
+                backgroundColor: colorFromHue(selectedLiquid.hue, 96),
+                borderColor: colorFromHue(selectedLiquid.hue, 80),
+                color: colorFromHue(selectedLiquid.hue, 35),
+              }}
+            >
+              {selectedLiquid.colorLabel}
+            </span>
           </div>
 
           <div className="mt-1 grid grid-cols-2 gap-x-2 gap-y-1 border-t border-slate-200/80 pt-1.5 text-[10px]">
@@ -530,26 +518,28 @@ export default function IVCatalogPage() {
             <span className="text-amber-900">{selectedLiquid.warningText}</span>
           </div>
         </section>
-      </main>
 
-      {/* Footer Dots Navigation */}
-      <footer className="py-2.5 px-4 flex justify-center gap-1.5 z-20 bg-white border-t border-slate-100">
-        {LIQUID_ITEMS.map((item, idx) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => handleItemClick(idx)}
-            className={`h-1.5 rounded-full transition-all ${
-              selectedIndex === idx ? "w-5" : "w-1.5 bg-slate-200"
-            }`}
-            style={{
-              backgroundColor:
-                selectedIndex === idx ? colorFromHue(item.hue, 45) : undefined,
-            }}
-            aria-label={`Select Channel ${item.channelNo}`}
-          />
-        ))}
-      </footer>
+        {/* Footer Dots Navigation */}
+        <footer className="py-1 flex justify-center gap-1.5">
+          {LIQUID_ITEMS.map((item, idx) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleItemClick(idx)}
+              className={`h-1.5 rounded-full transition-all ${
+                selectedIndex === idx ? "w-5" : "w-1.5 bg-slate-200"
+              }`}
+              style={{
+                backgroundColor:
+                  selectedIndex === idx
+                    ? colorFromHue(item.hue, 45)
+                    : undefined,
+              }}
+              aria-label={`Select Channel ${item.channelNo}`}
+            />
+          ))}
+        </footer>
+      </div>
     </div>
   );
 }
